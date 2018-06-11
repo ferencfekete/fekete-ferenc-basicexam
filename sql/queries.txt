@@ -1,0 +1,67 @@
+1. Kérdezd le, 
+* hogy melyik gyártóhoz hány model tartozik. (Tehát a gyártó neve, és mellé a darabszám.)
+
+SELECT manufacturer AS 'Gyártó neve', COUNT(model) AS 'modellek darabszáma'
+FROM `transport`
+GROUP BY manufacturer;
+
+2. Kérdezd le, 
+ * a három legnagyobb teherbírással (cargo_capacity) rendelkező hajó model (model)
+ nevét, gyártóját(manufacturer), és képét (image)
+ 
+SELECT model AS 'Hajó model neve', manufacturer AS 'Gyártó', image AS 'képe';
+FROM `transport`,
+ORDER BY `transport`.`cargo_capacity` DESC LIMIT 3;
+ 
+ 3. Kérdezd le 
+* azon hajók model nevét(model), mint Típus, 
+* melyeknél mind a cargo_capacity, passengers, max_atmospheric_speed, és crew, a crew értéke 1,
+* és a gyártó neve(manufacturer) A-val, B-vel, vagy C-vel kezdődik
+
+Számomra nem egyértelmű hogy mit akart a megrendelő/szerző, de szöveg szerint ez a megoldás:
+	
+SELECT model as 'Típus'
+FROM `transport`
+WHERE cargo_capacity 
+	AND passengers=1
+    AND max_atmosphering_speed=1
+    AND crew=1
+ 	AND manufacturer LIKE 'A%' OR 'B%' OR 'C%';
+	
+Józsival való egyeztetés után pedig, ha csak a crew értéke 1-et vizsgáljuk, ez a megoldás:
+
+SELECT model as 'Típus'
+FROM `transport`
+WHERE crew=1
+ 	AND manufacturer LIKE 'A%' OR 'B%' OR 'C%';
+
+4. Kérdezd le 
+* azon hajók minden adatát, 
+* melynek gyártójának(manufacturer) nevében szerepel a Corporation szó, 
+* az utasok száma(passangers) nagyobb, mint 0, 
+* az ár(cost_in_creadits) pedig 10000, és 200000 közötti.
+
+SELECT * FROM `transport`
+WHERE manufacturer LIKE '%Corporation%'
+	AND passengers>0
+    AND cost_in_credits BETWEEN 10000 AND 200000;
+
+5. Kérdez le az 
+* első három hajó nevét(model), mint Megnevezés, és gyártóját(manufacturer), mint Gyártó 
+* a legénység száma(crew) szerint csoportosítva, 
+* melyeknél a legénység(crew) száma 1 és 5 közötti, 
+* és meg van adva (nem NULL), és nem 0 a passengers, és a cargo_capacity értéke
+
+Számomra nem egyértelmű hogy mit vár a megrendelő/szerző,
+a kérdés szövege alapján ezt:
+
+SELECT model AS 'Megnevezés', manufacturer AS 'Gyártó'
+FROM `transport`
+WHERE passengers IS NOT NULL
+	AND passengers <> 0
+    AND cargo_capacity IS NOT NULL
+    AND cargo_capacity <> 0
+GROUP BY crew
+HAVING crew BETWEEN 1 and 5
+LIMIT 3;
+
